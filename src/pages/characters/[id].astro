@@ -13,13 +13,13 @@ const { phrases, escenaryImage1, name } = filosofo || {}
 
 <Layout title="Juego del Filosofo" backgroundImage={escenaryImage1}>
   
-  <section class="flex justify-between w-full min-h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board">
+  <section class="flex justify-between w-full min-h-[400px] h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board">
 
     <img
       decoding="async"
       src="/img/Recursos/Villan.webp"
       alt="Imagen del Villano"
-      class="h-[80px] absolute bottom-0 left-64 top-52 object-cover"
+      class="h-[80px] absolute bottom-0 lg:left-64 lg:top-52 object-cover"
       data-phrases={phrases}
       data-name={name}
       id="Villan"
@@ -131,10 +131,8 @@ const { phrases, escenaryImage1, name } = filosofo || {}
   let currentPosition = 0
   let currentPositonY = 0
 
-  const limitXVillan = $containerBoard.clientWidth - $villa.clientWidth
-  const limitYVillan = $containerBoard.clientHeight - $villa.clientHeight
-  let currentPositionVillan = 0
-  let currentPositonYVillan = 0
+  const limitXVillan = 50
+  const limitYVillan = 50
 
   const collidedDestinations: Element[] = []
 
@@ -143,44 +141,18 @@ const { phrases, escenaryImage1, name } = filosofo || {}
   let isMoveUp = true
   let isMoveDown = true
 
-  function moveVillan () {
-    const randomX = Math.floor(Math.random() * 200)
-    const randomY = Math.floor(Math.random() * 200)
+  function moveVillan() {
+    const villanPositionX = Math.min(Math.max(0, Math.random() * limitXVillan), limitXVillan)
+    const villanPositionY = Math.min(Math.max(0, Math.random() * limitXVillan), limitYVillan)
 
-    currentPositionVillan = randomX
-    currentPositonYVillan = randomY
-
-    if (currentPositionVillan - randomX >= 0) {
-      currentPositionVillan -= randomX
-      if (checkCollision()) return
-      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
-    }
-
-    if (currentPositonYVillan - randomY >= 0) {
-      currentPositonYVillan -= randomY
-      if (checkCollision()) return
-      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
-    }
-
-    if (currentPositionVillan + randomX <= limitXVillan) {
-      currentPositionVillan += randomX
-      if (checkCollision()) return
-      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
-    }
-
-    if (currentPositonYVillan + randomY <= limitYVillan) {
-      currentPositonYVillan += randomY
-      if (checkCollision()) return
-      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
-    }
-
-
+    
+    $villa.style.transform = `translate(${villanPositionX}px, ${villanPositionY}px)`
   }
 
   setInterval(() => {
     moveVillan()
     checkVillainCollision()
-  }, 3000)
+  }, 2000)
 
   function ShowModal(frase: string) {
     const $imageDialog = $('.clip-dialog') as HTMLDialogElement

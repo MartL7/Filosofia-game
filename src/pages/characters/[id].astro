@@ -14,6 +14,18 @@ const { phrases, escenaryImage1, name } = filosofo || {}
 <Layout title="Juego del Filosofo" backgroundImage={escenaryImage1}>
   
   <section class="flex justify-between w-full min-h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board">
+
+    <img
+      decoding="async"
+      src="/img/Recursos/Villan.webp"
+      alt="Imagen del Villano"
+      class="h-[80px] absolute bottom-0 left-64 top-52 object-cover"
+      data-phrases={phrases}
+      data-name={name}
+      id="Villan"
+      style="mask-image: linear-gradient(black 50%, transparent);"
+    />
+
     <aside class="min-h-full flex flex-col justify-between">
       <div>
         <img
@@ -98,6 +110,7 @@ const { phrases, escenaryImage1, name } = filosofo || {}
   const $buttonDown = $('#button-down') as HTMLButtonElement
 
   const $filosofo = $('#filosofo') as HTMLImageElement
+  const $villa = $('#Villan') as HTMLImageElement
   const $textShowing = $('#text-showing') as HTMLParagraphElement
   const $containerBoard = $('#container-board') as HTMLDivElement
 
@@ -118,14 +131,58 @@ const { phrases, escenaryImage1, name } = filosofo || {}
   let currentPosition = 0
   let currentPositonY = 0
 
+  const limitXVillan = $containerBoard.clientWidth - $villa.clientWidth
+  const limitYVillan = $containerBoard.clientHeight - $villa.clientHeight
+  let currentPositionVillan = 0
+  let currentPositonYVillan = 0
+
   const collidedDestinations: Element[] = []
-  
+
   let isMoveLeft = true
   let isMoveRight = true
   let isMoveUp = true
-
   let isMoveDown = true
-  function ShowModal (frase: string) {
+
+  function moveVillan () {
+    const randomX = Math.floor(Math.random() * 200)
+    const randomY = Math.floor(Math.random() * 200)
+
+    currentPositionVillan = randomX
+    currentPositonYVillan = randomY
+
+    if (currentPositionVillan - randomX >= 0) {
+      currentPositionVillan -= randomX
+      if (checkCollision()) return
+      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
+    }
+
+    if (currentPositonYVillan - randomY >= 0) {
+      currentPositonYVillan -= randomY
+      if (checkCollision()) return
+      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
+    }
+
+    if (currentPositionVillan + randomX <= limitXVillan) {
+      currentPositionVillan += randomX
+      if (checkCollision()) return
+      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
+    }
+
+    if (currentPositonYVillan + randomY <= limitYVillan) {
+      currentPositonYVillan += randomY
+      if (checkCollision()) return
+      else $villa.style.transform = `translate(${currentPositionVillan}px, ${currentPositonYVillan}px)`
+    }
+
+
+  }
+
+  setInterval(() => {
+    moveVillan()
+    checkVillainCollision()
+  }, 3000)
+
+  function ShowModal(frase: string) {
     const $imageDialog = $('.clip-dialog') as HTMLDialogElement
     const $closeButton = $('#close-dialog') as HTMLButtonElement
 
@@ -145,6 +202,8 @@ const { phrases, escenaryImage1, name } = filosofo || {}
           origin: { y: 0.6 },
           shape: ['star', 'circle']
         })
+
+        $villa.remove()
       }
 
       $imageDialog.close()
@@ -184,11 +243,10 @@ const { phrases, escenaryImage1, name } = filosofo || {}
     $filosofo.style.transform = `translate(${currentPosition}px, ${currentPositonY}px)`
   }
 
-  
   function moveLeft() {
     if (currentPosition - 10 >= 0) {
       currentPosition -= 10
-      if (checkColision()) return
+      if (checkCollision()) return
       else updatePosition()
     }
   }
@@ -196,30 +254,30 @@ const { phrases, escenaryImage1, name } = filosofo || {}
   function moveRight() {
     if (currentPosition + 10 <= limitX) {
       currentPosition += 10
-      if (checkColision()) return
+      if (checkCollision()) return
       else updatePosition()
     }
   }
 
-  function moveUp () {
+  function moveUp() {
     if (currentPositonY - 10 >= 0) {
       currentPositonY -= 10
-      if (checkColision()) return
+      if (checkCollision()) return
       else updatePosition()
     }
   }
 
-  function moveDown () {
+  function moveDown() {
     if (currentPositonY + 10 <= limitY) {
       currentPositonY += 10
-      if (checkColision()) return
+      if (checkCollision()) return
       else updatePosition()
     }
   }
 
-  function checkColision (): boolean {
+  function checkCollision(): boolean {
     const filosofoRect = $filosofo.getBoundingClientRect()
-    
+
     $destins.forEach(($destin, index) => {
       const $imageForDestin = $destin.querySelector('img') as HTMLImageElement
 
@@ -228,7 +286,7 @@ const { phrases, escenaryImage1, name } = filosofo || {}
       }
 
       const destinRect = $destin.getBoundingClientRect()
-      
+
       if (
         filosofoRect.left <= destinRect.right &&
         filosofoRect.right >= destinRect.left &&
@@ -236,7 +294,7 @@ const { phrases, escenaryImage1, name } = filosofo || {}
         filosofoRect.bottom >= destinRect.top
       ) {
         $imageForDestin.src = '/img/Recursos/answer-box-open.webp'
-        currentPositonY = 0 
+        currentPositonY = 0
         currentPosition = 0
         isMoveLeft = false
         isMoveRight = false
@@ -252,4 +310,22 @@ const { phrases, escenaryImage1, name } = filosofo || {}
 
     return false
   }
+
+  function checkVillainCollision() {
+    const filosofoRect = $filosofo.getBoundingClientRect()
+    const villanoRect = $villa.getBoundingClientRect()
+
+    if (
+      filosofoRect.left <= villanoRect.right &&
+      filosofoRect.right >= villanoRect.left &&
+      filosofoRect.top <= villanoRect.bottom &&
+      filosofoRect.bottom >= villanoRect.top
+    ) {
+      currentPositonY = 0
+      currentPosition = 0
+      updatePosition()
+      $villa.style.transform = `translate(0px, 0px)`
+    }
+  }
+
 </script>

@@ -1,0 +1,35 @@
+---
+import Modal from "./Modal.astro"
+import { team } from '../const/team'
+---
+
+<div class="mt-10 md:mt-20">
+  <button class="flex justify-center items-center size-12 rounded-full shadow-border-custom p-5" id="button-team">
+    ?
+  </button>
+</div>
+
+<Modal className='clip-dialog-2' id='close-dialog-2'>
+  <section class="shadow-border-custom bg-[#333]/70 p-5 rounded-lg flex flex-col justify-center items-center gap-y-5">
+    <h2 class="font-bold text-blue-400/90 text-center"> Integrantes del Equipo: </h2>
+    <ul class="flex flex-col text-center justify-center items-center font-semibold">
+      {
+        team.map(({ name }) => (
+          <li class="text-green-400/90">{name}</li>
+        ))
+      }
+    </ul>
+  </section>
+</Modal>
+
+<script>
+  import { $ } from '../lib/dom-selector'
+
+  const $button = $('#button-team') as HTMLButtonElement
+  const $modal = $('.clip-dialog-2') as HTMLDialogElement
+  const $close = $('#close-dialog-2') as HTMLDialogElement
+
+  $button.onclick = () => $modal.showModal()
+
+  $close.onclick = () => $modal.close()
+</script>

@@ -18,6 +18,7 @@
     "typescript": "^5.4.5"
   },
   "devDependencies": {
+    "@astrojs/vercel": "^7.6.0",
     "@types/canvas-confetti": "^1.6.4"
   }
 }

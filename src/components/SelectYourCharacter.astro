@@ -1,0 +1,105 @@
+---
+import { filosofos } from '../const/filosofos'
+
+---
+
+
+<section class="flex flex-col justify-center items-center gap-y-20">
+  <picture class="flex justify-center items-center size-full relative">
+    <img
+      decoding="async" 
+      src="/img/Kant/Kant-image-presentation.webp"
+      alt="Imagen del Filosofo" 
+      class="h-[400px] object-cover" 
+      id="image-presentation"
+      style="mask-image: linear-gradient(black 50%, transparent);"
+    />
+
+    <span 
+      class="left-50 font-bold pointer-events-none text-center absolute bottom-0 left-0 right-0 z-50 mx-auto text-4xl md:text-5xl text-blue-400/70"
+      id="name-text"
+    > 
+    </span>
+  </picture>
+
+
+  <article class="grid grid-cols-2 sm:grid-cols-3 characters-group gap-10 sm:gap-12">
+    {
+      filosofos.map((filosofo) => (
+        <a
+          href={`/characters/${filosofo.id}`}
+          data-name={filosofo.name}
+          class="character-link relative w-28 h-14 md:w-32 md:h-20 lg:w-36 lg:h-24"
+        >
+          <img
+            decoding="async" 
+            loading="lazy"
+            src={filosofo.imageSmall}
+            alt={filosofo.name} 
+            class="size-20 left-5 lg:size-28 md:size-24 object-cover rounded-lg -top-5 scale-95 z-10 absolute sm:left-5 lg:left-5 saturate-0 hover:scale-110 transition duration-500 hover:saturate-150"
+            style="mask-image: linear-gradient(black 50%, transparent);"
+          />
+
+          <div class="absolute inset-0 character-link-background"></div>
+        </a>
+      ))
+    }
+  </article>
+</section>
+
+<style>
+  .character-link-background {
+    opacity: .25;
+    background: linear-gradient(#fff 0%, #ffffff80 30%, #0000 95%);
+  }
+
+  .active img {
+    filter: saturate(150%);
+    transform: scale(1.1);
+  }
+</style>
+
+<script>
+  import { $, $$ } from '../lib/dom-selector'
+
+  const $imagesLinks = $$('.character-link') as NodeListOf<HTMLAnchorElement>
+  const $imagePresentation = $('#image-presentation') as HTMLImageElement
+  const $nameText = $('#name-text') as HTMLSpanElement
+
+  function updatePresentation(name: string) {
+    const folder = name.split(' ').at(-1)
+    const urlImage = `/img/${folder}/${folder}-image-presentation.webp` ?? '/img/Locke/Locke-image-presentation.webp'
+
+    localStorage.setItem('filosofo', name)
+
+    $nameText.textContent = name
+    $imagePresentation.src = urlImage
+    $imagePresentation.alt = `Imagen del filosofo ${name}`
+  }
+
+  function setActiveLink(name: string) {
+    $imagesLinks.forEach(($imageLink) => {
+      if ($imageLink.dataset.name === name) {
+        $imageLink.classList.add('active')
+      } else {
+        $imageLink.classList.remove('active')
+      }
+    })
+  }
+
+  $imagesLinks.forEach(($imageLink) => {
+    $imageLink.addEventListener('mouseenter', () => {
+      const { name } = $imageLink.dataset
+      if (name) {
+        updatePresentation(name)
+        setActiveLink(name)
+      }
+    })
+  })
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedName = localStorage.getItem('filosofo') || 'John Locke'
+    updatePresentation(savedName)
+    setActiveLink(savedName)
+  })
+</script>

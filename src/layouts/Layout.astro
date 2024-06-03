@@ -1,0 +1,50 @@
+---
+interface Props {
+	title: string
+	backgroundImage?: string
+}
+
+const { title, backgroundImage } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+
+		{
+			!backgroundImage ? (
+				<div class="absolute top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
+			)
+			: (
+				<img src={backgroundImage} alt="Imagen de Fondo" class="object-cover absolute inset-0 -z-50 size-full opacity-20"/>
+			)
+		}
+		<div class="max-w-5xl m-auto">
+			<slot />
+		</div>
+
+	</body>
+</html>
+<style is:global>
+	:root {
+		color-scheme: dark;
+	}
+
+	html {
+		font-family: system-ui, sans-serif;
+	}
+
+	.shadow-border-custom {
+		border: 2px solid white;
+		box-shadow: inset 0 0 5px purple, 0 0 10px blue;
+	}
+	
+</style>

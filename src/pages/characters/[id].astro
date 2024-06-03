@@ -1,0 +1,255 @@
+---
+import { filosofos } from '../../const/filosofos'
+import Modal from '../../components/Modal.astro'
+import Layout from '../../layouts/Layout.astro'
+import GamePad from '../../components/GamePad.astro'
+
+const { id } = Astro.params
+
+const filosofo = filosofos.find((f) => f.id === id)
+
+const { phrases, escenaryImage1, name } = filosofo || {}
+---
+
+<Layout title="Juego del Filosofo" backgroundImage={escenaryImage1}>
+  
+  <section class="flex justify-between w-full min-h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board">
+    <aside class="min-h-full flex flex-col justify-between">
+      <div>
+        <img
+          decoding="async"
+          src={filosofo?.imagePresentation}
+          alt="Imagen del Filosofo"
+          class="h-[100px] absolute left-0 top-0 object-cover"
+          data-phrases={phrases}
+          data-name={name}
+          id="filosofo"
+          style="mask-image: linear-gradient(black 50%, transparent);"
+        />
+      </div>
+
+      <div>
+        <button id="answer-3" class="target-destin">
+          <img 
+            src="/img/Recursos/answer-box.webp" 
+            alt="Imagen de Cofre de Preguntas"
+            class="size-12"
+          />
+        </button>
+      </div>
+    </aside>
+
+    <aside class="flex flex-col min-h-full justify-between items-center">
+      <div>
+        <button id="answer" class="target-destin">
+          <img 
+            src="/img/Recursos/answer-box.webp" 
+            alt="Imagen de Cofre de Preguntas"
+            class="size-12"
+          />
+        </button>
+      </div>
+
+      <div>
+        <button id="answer-2" class="target-destin">
+          <img 
+            src="/img/Recursos/answer-box.webp" 
+            alt="Imagen de Cofre de Preguntas"
+            class="size-12"
+          />
+        </button>
+      </div>
+    </aside>
+  </section>
+
+  <GamePad />
+
+  <Modal className='clip-dialog' id='close-dialog'>
+    <article class="flex justify-center items-center flex-col">
+      <img
+        decoding="async"
+        src={filosofo?.imagePresentation}
+        alt="Imagen del Filosofo"
+        class="h-[200px]"
+        id="filosofo"
+        style="mask-image: linear-gradient(black 50%, transparent);"
+      />
+
+      <section class="flex flex-col text-center justify-center items-center  border border-white size-full rounded-lg px-3">
+  
+        <h2 class="text-red-400/90 font-bold"> Su filosofía </h2>
+  
+        <p class="text-pretty text-blue-300/70" id="text-showing">
+        </p>
+      </section>
+    </article>
+  </Modal>
+
+</Layout>
+
+
+<script>
+  import { $, $$ } from '../../lib/dom-selector'
+  import confetti from 'canvas-confetti'
+
+  const $buttonUp = $('#button-up') as HTMLButtonElement
+  const $buttonLeft = $('#button-left') as HTMLButtonElement
+  const $buttonRigth = $('#button-rigth') as HTMLButtonElement
+  const $buttonDown = $('#button-down') as HTMLButtonElement
+
+  const $filosofo = $('#filosofo') as HTMLImageElement
+  const $textShowing = $('#text-showing') as HTMLParagraphElement
+  const $containerBoard = $('#container-board') as HTMLDivElement
+
+  const $destins = $$('.target-destin') as NodeListOf<HTMLButtonElement>
+
+  const { phrases, name } = $filosofo.dataset
+  const arrayPhrases = phrases?.split('.')
+
+  const OriginalImage = $filosofo.src.split('/')
+
+  const imageOriginal = `/${OriginalImage.slice(3).join('/')}`
+
+  const nameFolder = name?.split(' ').at(-1)
+  const imgReverse = `/img/${nameFolder}/${nameFolder}-image-presentation-reverse.webp`
+
+  const limitX = $containerBoard.clientWidth - $filosofo.clientWidth - 30
+  const limitY = $containerBoard.clientHeight - $filosofo.clientHeight - 30
+  let currentPosition = 0
+  let currentPositonY = 0
+
+  const collidedDestinations: Element[] = []
+  
+  let isMoveLeft = true
+  let isMoveRight = true
+  let isMoveUp = true
+
+  let isMoveDown = true
+  function ShowModal (frase: string) {
+    const $imageDialog = $('.clip-dialog') as HTMLDialogElement
+    const $closeButton = $('#close-dialog') as HTMLButtonElement
+
+    if (!$imageDialog || !$closeButton) return
+
+    $closeButton.addEventListener('click', () => {
+
+      isMoveLeft = true
+      isMoveRight = true
+      isMoveUp = true
+      isMoveDown = true
+
+      if (collidedDestinations.length === 3) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          shape: ['star', 'circle']
+        })
+      }
+
+      $imageDialog.close()
+    })
+
+    $textShowing.innerHTML = frase
+
+    $imageDialog.showModal()
+  }
+
+  $buttonUp.addEventListener('click', moveUp)
+  $buttonLeft.addEventListener('click', () => {
+    moveLeft()
+    $filosofo.src = imgReverse
+  })
+  $buttonRigth.addEventListener('click', () => {
+    moveRight()
+    $filosofo.src = imageOriginal
+  })
+  $buttonDown.addEventListener('click', moveDown)
+
+  document.addEventListener('keydown', (e) => {
+    if (isMoveLeft && e.key === 'ArrowLeft') {
+      moveLeft()
+      $filosofo.src = imgReverse
+    } else if (isMoveRight && e.key === 'ArrowRight') {
+      moveRight()
+      $filosofo.src = imageOriginal
+    } else if (isMoveDown && e.key === 'ArrowDown') {
+      moveDown()
+    } else if (isMoveUp && e.key === 'ArrowUp') {
+      moveUp()
+    }
+  })
+
+  function updatePosition() {
+    $filosofo.style.transform = `translate(${currentPosition}px, ${currentPositonY}px)`
+  }
+
+  
+  function moveLeft() {
+    if (currentPosition - 10 >= 0) {
+      currentPosition -= 10
+      if (checkColision()) return
+      else updatePosition()
+    }
+  }
+
+  function moveRight() {
+    if (currentPosition + 10 <= limitX) {
+      currentPosition += 10
+      if (checkColision()) return
+      else updatePosition()
+    }
+  }
+
+  function moveUp () {
+    if (currentPositonY - 10 >= 0) {
+      currentPositonY -= 10
+      if (checkColision()) return
+      else updatePosition()
+    }
+  }
+
+  function moveDown () {
+    if (currentPositonY + 10 <= limitY) {
+      currentPositonY += 10
+      if (checkColision()) return
+      else updatePosition()
+    }
+  }
+
+  function checkColision (): boolean {
+    const filosofoRect = $filosofo.getBoundingClientRect()
+    
+    $destins.forEach(($destin, index) => {
+      const $imageForDestin = $destin.querySelector('img') as HTMLImageElement
+
+      if (collidedDestinations.includes($destin)) {
+        return false
+      }
+
+      const destinRect = $destin.getBoundingClientRect()
+      
+      if (
+        filosofoRect.left <= destinRect.right &&
+        filosofoRect.right >= destinRect.left &&
+        filosofoRect.top <= destinRect.bottom &&
+        filosofoRect.bottom >= destinRect.top
+      ) {
+        $imageForDestin.src = '/img/Recursos/answer-box-open.webp'
+        currentPositonY = 0 
+        currentPosition = 0
+        isMoveLeft = false
+        isMoveRight = false
+        isMoveUp = false
+        isMoveDown = false
+        ShowModal(arrayPhrases?.at(index) ?? '')
+
+        collidedDestinations.push($destin)
+        $imageForDestin.classList.add('scale-125', 'transition-all')
+        return true
+      }
+    })
+
+    return false
+  }
+</script>

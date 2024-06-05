@@ -6,7 +6,15 @@ interface Filosofos {
   topic: string
   escenaryImage1: string
   escenaryImage2?: string
-  phrases: string[]
+  phrases?: Questions[]
+  phrases2?: string[]
+}
+
+
+interface Questions {
+  question: string
+  options: string[]
+  answer: string
 }
 
 export const filosofos: Filosofos[] = [
@@ -19,11 +27,43 @@ export const filosofos: Filosofos[] = [
     escenaryImage1: '/img/Locke/Locke-escenary-2.webp',
     escenaryImage2: '/img/Locke/Locke-escenary-2.webp',
     phrases: [
-      'Locke creía que la mente al nacer es una "pizarra en blanco" (tabula rasa) y que todo conocimiento proviene de la experiencia sensorial y la reflexión.',
-
-      'A diferencia de los racionalistas, Locke sostenía que el conocimiento humano se basa en la experiencia sensorial y la observación, no en ideas innatas.',
-
-      'Locke argumentaba que todos los individuos tienen derechos naturales a la vida, la libertad y la propiedad, y que estos derechos son inalienables'
+      {
+        question: '¿Qué es la filosofía según Locke?',
+        options: [
+          'Es el estudio de la realidad',
+          'Es el estudio de la mente',
+          'Es el estudio de la moral',
+          'Es el estudio de la política'
+        ],
+        answer: 'Es el estudio de la mente'
+      },
+      {
+        question: '¿Qué es la mente según Locke?',
+        options: [
+          'Es un tabula rasa',
+          'Es una sustancia inmaterial',
+          'Es una sustancia material',
+          'Es una sustancia espiritual'
+        ],
+        answer: 'Es un tabula rasa'
+      },
+      {
+        question: '¿Qué es la idea según Locke?',
+        options: [
+          'Es una representación de la realidad',
+          'Es una representación de la mente',
+          'Es una representación de la moral',
+          'Es una representación de la política'
+        ],
+        answer: 'Es una representación de la realidad'
+      }
+    ],
+    phrases2: [
+      'La mente es como un papel en blanco',
+      'La mente es como una tabula rasa',
+      'La mente es como un libro en blanco',
+      'La mente es como un cuaderno en blanco',
+      'La mente es como un papel en blanco'
     ]
   },
   
@@ -35,11 +75,43 @@ export const filosofos: Filosofos[] = [
     topic: 'Racionalismo',
     escenaryImage1: '/img/Descartes/Descartes-escenary-1.webp',
     phrases: [
-      'Cogito, ergo sum ("Pienso, luego existo"): Esta es la afirmación más famosa de Descartes, que expresa la certeza de la existencia propia como resultado del acto de pensar.',
-
-      'Dios: Descartes argumenta que la existencia de Dios es necesaria para garantizar la verdad de la razón y la ciencia.',
-
-      'Descartes creía que el mundo físico podía ser explicado en términos de materia y movimiento, y que los fenómenos naturales podían ser entendidos como máquinas.'
+      {
+        question: '¿Qué es la filosofía según Descartes?',
+        options: [
+          'Es el estudio de la realidad',
+          'Es el estudio de la mente',
+          'Es el estudio de la moral',
+          'Es el estudio de la política'
+        ],
+        answer: 'Es el estudio de la mente'
+      },
+      {
+        question: '¿Qué es la mente según Descartes?',
+        options: [
+          'Es un tabula rasa',
+          'Es una sustancia inmaterial',
+          'Es una sustancia material',
+          'Es una sustancia espiritual'
+        ],
+        answer: 'Es una sustancia inmaterial'
+      },
+      {
+        question: '¿Qué es la idea según Descartes?',
+        options: [
+          'Es una representación de la realidad',
+          'Es una representación de la mente',
+          'Es una representación de la moral',
+          'Es una representación de la política'
+        ],
+        answer: 'Es una representación de la realidad'
+      }
+    ],
+    phrases2: [
+      'La mente es como un papel en blanco',
+      'La mente es como una tabula rasa',
+      'La mente es como un libro en blanco',
+      'La mente es como un cuaderno en blanco',
+      'La mente es como un papel en blanco'
     ]
   }, 
 
@@ -51,11 +123,43 @@ export const filosofos: Filosofos[] = [
     topic: 'cristicismo',
     escenaryImage1: '/img/Kant/Kant-escenary-1.webp',
     phrases: [
-      ' Kant sostenía que la moralidad se basa en la razón y la autonomía del individuo, es decir, en la capacidad de los seres humanos para legislar sus propias leyes morales a través de la razón.',
-
-      'La ética de Kant se basa en la idea de deber y en el cumplimiento de las obligaciones morales por sí mismas, no en las consecuencias de las acciones.',
-
-      'Kant distinguía entre los fenómenos (lo que podemos percibir y conocer) y los noúmenos (la realidad en sí misma, que está más allá de nuestra comprensión directa).'
+      {
+        question: '¿Qué es la filosofía según Kant?',
+        options: [
+          'Es el estudio de la realidad',
+          'Es el estudio de la mente',
+          'Es el estudio de la moral',
+          'Es el estudio de la política'
+        ],
+        answer: 'Es el estudio de la moral'
+      },
+      {
+        question: '¿Qué es la mente según Kant?',
+        options: [
+          'Es un tabula rasa',
+          'Es una sustancia inmaterial',
+          'Es una sustancia material',
+          'Es una sustancia espiritual'
+        ],
+        answer: 'Es una sustancia inmaterial'
+      },
+      {
+        question: '¿Qué es la idea según Kant?',
+        options: [
+          'Es una representación de la realidad',
+          'Es una representación de la mente',
+          'Es una representación de la moral',
+          'Es una representación de la política'
+        ],
+        answer: 'Es una representación de la realidad'
+      }
+    ],
+    phrases2: [
+      'La mente es como un papel en blanco',
+      'La mente es como una tabula rasa',
+      'La mente es como un libro en blanco',
+      'La mente es como un cuaderno en blanco',
+      'La mente es como un papel en blanco'
     ]
   }
 ]

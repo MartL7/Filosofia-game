@@ -8,70 +8,17 @@ const { id } = Astro.params
 
 const filosofo = filosofos.find((f) => f.id === id)
 
-const { phrases, escenaryImage1, name } = filosofo || {}
+const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
+
+console.log(phrases2)
 ---
 
 <Layout title="Juego del Filosofo" backgroundImage={escenaryImage1}>
-  
-  <section class="flex justify-between w-full min-h-[400px] h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board">
+  <section class="flex justify-center w-full min-h-[400px] h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board" data-name={name} data-phrases={phrases2}>
 
-    <img
-      decoding="async"
-      src="/img/Recursos/Villan.webp"
-      alt="Imagen del Villano"
-      class="h-[80px] absolute bottom-0 lg:left-64 lg:top-52 object-cover"
-      data-phrases={phrases}
-      data-name={name}
-      id="Villan"
-      style="mask-image: linear-gradient(black 50%, transparent);"
-    />
 
-    <aside class="min-h-full flex flex-col justify-between">
-      <div>
-        <img
-          decoding="async"
-          src={filosofo?.imagePresentation}
-          alt="Imagen del Filosofo"
-          class="h-[100px] absolute left-0 top-0 object-cover"
-          data-phrases={phrases}
-          data-name={name}
-          id="filosofo"
-          style="mask-image: linear-gradient(black 50%, transparent);"
-        />
-      </div>
+    <canvas id="gameCanvas" width="900" height="600" class="border"></canvas>
 
-      <div>
-        <button id="answer-3" class="target-destin">
-          <img 
-            src="/img/Recursos/answer-box.webp" 
-            alt="Imagen de Cofre de Preguntas"
-            class="size-12"
-          />
-        </button>
-      </div>
-    </aside>
-
-    <aside class="flex flex-col min-h-full justify-between items-center">
-      <div>
-        <button id="answer" class="target-destin">
-          <img 
-            src="/img/Recursos/answer-box.webp" 
-            alt="Imagen de Cofre de Preguntas"
-            class="size-12"
-          />
-        </button>
-      </div>
-
-      <div>
-        <button id="answer-2" class="target-destin">
-          <img 
-            src="/img/Recursos/answer-box.webp" 
-            alt="Imagen de Cofre de Preguntas"
-            class="size-12"
-          />
-        </button>
-      </div>
-    </aside>
   </section>
 
   <GamePad />
@@ -99,205 +46,275 @@ const { phrases, escenaryImage1, name } = filosofo || {}
 
 </Layout>
 
-
 <script>
   import { $, $$ } from '../../lib/dom-selector'
   import confetti from 'canvas-confetti'
 
-  const $buttonUp = $('#button-up') as HTMLButtonElement
-  const $buttonLeft = $('#button-left') as HTMLButtonElement
-  const $buttonRigth = $('#button-rigth') as HTMLButtonElement
-  const $buttonDown = $('#button-down') as HTMLButtonElement
-
-  const $filosofo = $('#filosofo') as HTMLImageElement
-  const $villa = $('#Villan') as HTMLImageElement
+  const $container = $('#container-board') as HTMLElement
+  const $modal = $('.clip-dialog') as HTMLDialogElement
   const $textShowing = $('#text-showing') as HTMLParagraphElement
-  const $containerBoard = $('#container-board') as HTMLDivElement
+  const $buttonClose = $('#close-dialog') as HTMLButtonElement
 
-  const $destins = $$('.target-destin') as NodeListOf<HTMLButtonElement>
+  const canvas = $('#gameCanvas') as HTMLCanvasElement
+  const ctx = canvas.getContext('2d')
 
-  const { phrases, name } = $filosofo.dataset
-  const arrayPhrases = phrases?.split('.')
+  const { name } = $container.dataset
+  const secondName = name?.split(' ').at(-1)
 
-  const OriginalImage = $filosofo.src.split('/')
+  const { phrases } = $container.dataset
+  const phrasesArray = phrases?.split(',')
 
-  const imageOriginal = `/${OriginalImage.slice(3).join('/')}`
+  const limitCofres = 8
+  let openCofres = 0
+  let allCofresOpen = false
+  let levelGame = 1
 
-  const nameFolder = name?.split(' ').at(-1)
-  const imgReverse = `/img/${nameFolder}/${nameFolder}-image-presentation-reverse.webp`
+  // Controladores de movimiento del Filosofo
+  let moveLeft = true
+  let moveRight = true
+  let moveUp = true
+  let moveDown = true
 
-  const limitX = $containerBoard.clientWidth - $filosofo.clientWidth - 30
-  const limitY = $containerBoard.clientHeight - $filosofo.clientHeight - 30
-  let currentPosition = 0
-  let currentPositonY = 0
+  // Dibujos y movimientos
+  const width = canvas.width // -> 900
+  const height = canvas.height // -> 600
 
-  const limitXVillan = 50
-  const limitYVillan = 50
-
-  const collidedDestinations: Element[] = []
-
-  let isMoveLeft = true
-  let isMoveRight = true
-  let isMoveUp = true
-  let isMoveDown = true
-
-  function moveVillan() {
-    const villanPositionX = Math.min(Math.max(0, Math.random() * limitXVillan), limitXVillan)
-    const villanPositionY = Math.min(Math.max(0, Math.random() * limitXVillan), limitYVillan)
-
-    
-    $villa.style.transform = `translate(${villanPositionX}px, ${villanPositionY}px)`
+  const filosofo = {
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 80,
+    dx: 0,
+    dy: 0,
+    speed: 5,  
+    initialX: 0, 
+    initialY: 0 
   }
 
-  setInterval(() => {
-    moveVillan()
-    checkVillainCollision()
-  }, 2000)
-
-  function ShowModal(frase: string) {
-    const $imageDialog = $('.clip-dialog') as HTMLDialogElement
-    const $closeButton = $('#close-dialog') as HTMLButtonElement
-
-    if (!$imageDialog || !$closeButton) return
-
-    $closeButton.addEventListener('click', () => {
-
-      isMoveLeft = true
-      isMoveRight = true
-      isMoveUp = true
-      isMoveDown = true
-
-      if (collidedDestinations.length === 3) {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          shape: ['star', 'circle']
-        })
-
-        $villa.remove()
+  function events() {
+    document.addEventListener('keydown', (event) => {
+      const { key } = event
+      
+      if (moveRight && key === 'ArrowRight') {
+        filosofo.dx = filosofo.speed
       }
-
-      $imageDialog.close()
+      if (moveLeft && key === 'ArrowLeft') {
+        filosofo.dx = -filosofo.speed
+      }
+      if (moveUp && key === 'ArrowUp') {
+        filosofo.dy = -filosofo.speed
+      }
+      if (moveDown && key === 'ArrowDown') {
+        filosofo.dy = filosofo.speed
+      }
     })
 
-    $textShowing.innerHTML = frase
+    document.addEventListener('keyup', (event) => {
+      const { key } = event
 
-    $imageDialog.showModal()
+      if (key === 'ArrowRight' || key === 'ArrowLeft') {
+
+        filosofo.dx = 0
+      }
+
+      if (key === 'ArrowUp' || key === 'ArrowDown') {
+        filosofo.dy = 0
+      }
+    })
   }
 
-  $buttonUp.addEventListener('click', moveUp)
-  $buttonLeft.addEventListener('click', () => {
-    moveLeft()
-    $filosofo.src = imgReverse
-  })
-  $buttonRigth.addEventListener('click', () => {
-    moveRight()
-    $filosofo.src = imageOriginal
-  })
-  $buttonDown.addEventListener('click', moveDown)
+  const villans = [
+    { x: 100, y: 100, width: 80, height: 80, dx: 2, dy: 2 },
+    { x: 200, y: 200, width: 80, height: 80, dx: -2, dy: 2 },
+    { x: 300, y: 300, width: 80, height: 80, dx: 2, dy: -2 },
+    { x: 400, y: 400, width: 80, height: 80, dx: -2, dy: -2 },
+  ]
 
-  document.addEventListener('keydown', (e) => {
-    if (isMoveLeft && e.key === 'ArrowLeft') {
-      moveLeft()
-      $filosofo.src = imgReverse
-    } else if (isMoveRight && e.key === 'ArrowRight') {
-      moveRight()
-      $filosofo.src = imageOriginal
-    } else if (isMoveDown && e.key === 'ArrowDown') {
-      moveDown()
-    } else if (isMoveUp && e.key === 'ArrowUp') {
-      moveUp()
+  const villansPar = villans.filter((villan) => villan.dx > 0)
+
+  const cofres = [
+    { x: width / 2, y: 0, width: 50, height: 50, open: false },
+    { x: width / 2, y: height / 2, width: 50, height: 50, open: false },
+    { x: width / 2, y: height - 60, width: 50, height: 50, open: false },
+    { x: 0, y: height / 2, width: 50, height: 50, open: false},
+    { x: 0, y: height - 60, width: 50, height: 50, open: false },
+    { x: width - 60, y: 0, width: 50, height: 50, open: false },
+    { x: width - 60, y: height / 2, width: 50, height: 50, open: false },
+    { x: width - 60, y: height - 60, width: 50, height: 50, open: false }
+  ]
+
+  // Imagenes
+  const filosofoImage = new Image()
+  filosofoImage.src = `/img/${secondName}/${secondName}-image-presentation.webp`
+
+  const cofreImage = new Image()
+  cofreImage.src = '/img/Recursos/answer-box.webp'
+
+  const cofreOpenImage = new Image()
+  cofreOpenImage.src = '/img/Recursos/answer-box-open.webp'
+
+  const villanImage = new Image()
+  villanImage.src = '/img/Recursos/Villan.webp'
+
+  const villanImage2 = new Image()
+  villanImage2.src = '/img/Recursos/Villan-2.webp'
+
+  const villanImage3 = new Image()
+  villanImage3.src = '/img/Recursos/Villan-3.webp'
+
+  function drawFilosofo() {
+    ctx?.drawImage(filosofoImage, filosofo.x, filosofo.y, filosofo.width, filosofo.height)
+  }
+
+  function drawCofres() {
+    cofres.forEach(cofre => {
+      if (cofre.open) {
+        ctx?.drawImage(cofreOpenImage, cofre.x, cofre.y, cofre.width, cofre.height)
+      } else {
+        ctx?.drawImage(cofreImage, cofre.x, cofre.y, cofre.width, cofre.height)
+      }
+    })
+  }
+
+  function drawVillans() {
+    if (levelGame === 2) {
+      villans.forEach(villan => {
+        ctx?.drawImage(villanImage2, villan.x, villan.y, villan.width, villan.height)
+      })
+    } else if (levelGame === 1){
+      villans.forEach(villan => {
+        ctx?.drawImage(villanImage, villan.x, villan.y, villan.width, villan.height)
+      })
+    } else if (levelGame === 3) {  
+      villans.forEach(villan => {
+        ctx?.drawImage(villanImage3, villan.x, villan.y, villan.width, villan.height)
+      })
     }
-  })
+  }
+
+  function villansMovements() {
+    villans.forEach(villan => {
+      villan.x += villan.dx
+      villan.y += villan.dy
+
+      if (villan.x + villan.width > width || villan.x < 0) {
+        villan.dx *= -1
+      }
+      if (villan.y + villan.height > height || villan.y < 0) {
+        villan.dy *= -1
+      }
+    })
+  }
+
+  function cleanCanvas() {
+    ctx?.clearRect(0, 0, width, height)
+  }
 
   function updatePosition() {
-    $filosofo.style.transform = `translate(${currentPosition}px, ${currentPositonY}px)`
+    filosofo.x += filosofo.dx
+    filosofo.y += filosofo.dy
+
+    // Limites del canvas
+    if (filosofo.x < 0) filosofo.x = 0
+    if (filosofo.x + filosofo.width > width) filosofo.x = width - filosofo.width
+    if (filosofo.y < 0) filosofo.y = 0
+    if (filosofo.y + filosofo.height > height) filosofo.y = height - filosofo.height
   }
 
-  function moveLeft() {
-    if (currentPosition - 10 >= 0) {
-      currentPosition -= 10
-      if (checkCollision()) return
-      else updatePosition()
-    }
-  }
-
-  function moveRight() {
-    if (currentPosition + 10 <= limitX) {
-      currentPosition += 10
-      if (checkCollision()) return
-      else updatePosition()
-    }
-  }
-
-  function moveUp() {
-    if (currentPositonY - 10 >= 0) {
-      currentPositonY -= 10
-      if (checkCollision()) return
-      else updatePosition()
-    }
-  }
-
-  function moveDown() {
-    if (currentPositonY + 10 <= limitY) {
-      currentPositonY += 10
-      if (checkCollision()) return
-      else updatePosition()
-    }
-  }
-
-  function checkCollision(): boolean {
-    const filosofoRect = $filosofo.getBoundingClientRect()
-
-    $destins.forEach(($destin, index) => {
-      const $imageForDestin = $destin.querySelector('img') as HTMLImageElement
-
-      if (collidedDestinations.includes($destin)) {
-        return false
-      }
-
-      const destinRect = $destin.getBoundingClientRect()
-
-      if (
-        filosofoRect.left <= destinRect.right &&
-        filosofoRect.right >= destinRect.left &&
-        filosofoRect.top <= destinRect.bottom &&
-        filosofoRect.bottom >= destinRect.top
-      ) {
-        $imageForDestin.src = '/img/Recursos/answer-box-open.webp'
-        currentPositonY = 0
-        currentPosition = 0
-        isMoveLeft = false
-        isMoveRight = false
-        isMoveUp = false
-        isMoveDown = false
-        ShowModal(arrayPhrases?.at(index) ?? '')
-
-        collidedDestinations.push($destin)
-        $imageForDestin.classList.add('scale-125', 'transition-all')
-        return true
+  function detectCollision() {
+    villans.forEach(villan => {
+      if (filosofo.x < villan.x + villan.width &&
+          filosofo.x + filosofo.width > villan.x &&
+          filosofo.y < villan.y + villan.height &&
+          filosofo.y + filosofo.height > villan.y) {
+        filosofo.x = filosofo.initialX
+        filosofo.y = filosofo.initialY
       }
     })
 
-    return false
+    if (cofres.every((cofre) => cofre.open)) {
+      villans.length = 2
+    }
+
+    cofres.forEach((cofre, index) => {  
+      if (cofre.open) return
+
+      if (filosofo.x < cofre.x + cofre.width &&
+          filosofo.x + filosofo.width > cofre.x &&
+          filosofo.y < cofre.y + cofre.height &&
+          filosofo.y + filosofo.height > cofre.y) {
+            moveLeft = false
+            moveRight = false
+            moveUp = false
+            moveDown = false
+            villansPar.forEach(villan => {
+              villan.dx = 3
+              villan.dy = -3
+            })
+            showModal(index)
+
+            if (!cofre.open) {
+              openCofres++
+              cofre.open = true
+              villans.push({ x: Math.random() * width, y: Math.random() * height, width: 80, height: 80, dx: 2, dy: 2 })
+            }
+
+            if (openCofres === limitCofres) {
+              confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                shapes: ['star']
+              })
+              restartGame()
+            }
+
+            filosofo.x = filosofo.initialX
+            filosofo.y = filosofo.initialY
+      }
+    })
   }
 
-  function checkVillainCollision() {
-    const filosofoRect = $filosofo.getBoundingClientRect()
-    const villanoRect = $villa.getBoundingClientRect()
+  function restartGame() {
+    cofres.forEach(cofre => cofre.open = false)
+    levelGame++
+    if (levelGame > 1) {
+      filosofo.speed = filosofo.speed - 1
+      villans.length = 4
+    }
+    openCofres = 0
+    allCofresOpen = false
+    moveLeft = true
+    moveRight = true
+    moveUp = true
+    moveDown = true
+  }
 
-    if (
-      filosofoRect.left <= villanoRect.right &&
-      filosofoRect.right >= villanoRect.left &&
-      filosofoRect.top <= villanoRect.bottom &&
-      filosofoRect.bottom >= villanoRect.top
-    ) {
-      currentPositonY = 0
-      currentPosition = 0
-      updatePosition()
-      $villa.style.transform = `translate(0px, 0px)`
+  function draw() {
+    cleanCanvas()
+    updatePosition()
+    drawFilosofo()
+    drawCofres()
+    drawVillans()
+    villansMovements()
+    detectCollision()
+    window.requestAnimationFrame(draw)
+  }
+
+  function showModal (index: number) {
+    $modal.showModal()
+
+    $textShowing.innerHTML = phrasesArray?.at(index) ?? ''
+    
+    $buttonClose.onclick = () => {
+      $modal.close()
+      moveLeft = true
+      moveRight = true
+      moveUp = true
+      moveDown = true
     }
   }
 
+  events()
+  draw()
 </script>

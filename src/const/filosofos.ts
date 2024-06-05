@@ -24,8 +24,8 @@ export const filosofos: Filosofos[] = [
     imagePresentation: '/img/Locke/Locke-image-presentation.webp',
     imageSmall: '/img/Locke/Locke-image-small.webp',
     topic: 'Empirismo',
-    escenaryImage1: '/img/Locke/Locke-escenary-2.webp',
-    escenaryImage2: '/img/Locke/Locke-escenary-2.webp',
+    escenaryImage1: '/img/Locke/Locke-escenary-6.webp',
+    escenaryImage2: '/img/Locke/Locke-escenary-6.webp',
     phrases: [
       {
         question: '¿Qué es la filosofía según Locke?',
@@ -59,11 +59,14 @@ export const filosofos: Filosofos[] = [
       }
     ],
     phrases2: [
-      'La mente es como un papel en blanco',
-      'La mente es como una tabula rasa',
-      'La mente es como un libro en blanco',
-      'La mente es como un cuaderno en blanco',
-      'La mente es como un papel en blanco'
+      'El fin del derecho no es abolir o restringir, sino preservar y ampliar la libertad.',
+      'Donde no hay ley. No hay libertad.',
+      'Los hombres olvidan siempre que la felicidad humana es una disposición de la mente y no una condición de las circunstancias.',
+      'Es una prerrogativa de la naturaleza humana tener miedo de lo desconocido.',
+      'Ningún conocimiento humano puede ir más allá de su experiencia.',
+      'El hombre no tiene una propiedad más noble ni más valiosa que su propia persona',
+      'La principal habilidad que hace a un hombre apto para la convivencia es la razón.',
+      'El conocimiento de la humanidad debe ser tratado con humanidad.'
     ]
   },
   
@@ -78,10 +81,14 @@ export const filosofos: Filosofos[] = [
       {
         question: '¿Qué es la filosofía según Descartes?',
         options: [
-          'Es el estudio de la realidad',
-          'Es el estudio de la mente',
-          'Es el estudio de la moral',
-          'Es el estudio de la política'
+          'Cogito. ergo sum" ("Pienso, luego existo").',
+          'Daría todo lo que sé. por la mitad de lo que ignoro.',
+          'El buen sentido es la cosa mejor repartida del mundo; porque cada uno piensa estar tan bien provisto de él.',
+          'Para investigar la verdad es preciso dudar. en cuanto sea posible. de todas las cosas.',
+          'Leer todos los buenos libros es como una conversación con las mejores mentes de los siglos pasados.',
+          'La filosofía es la que nos distingue de los salvajes y bárbaros; las naciones son tanto más civilizadas y cultas cuanto mejor filosofan sus hombres.',
+          'Dividir cada una de las dificultades que se examinan en tantas partes como sea posible y en cuantas requiera su mejor solución.',
+          'No hay nada repartido de modo más equitativo que la razón: todo el mundo está convencido de tener suficiente.'
         ],
         answer: 'Es el estudio de la mente'
       },
@@ -107,11 +114,14 @@ export const filosofos: Filosofos[] = [
       }
     ],
     phrases2: [
-      'La mente es como un papel en blanco',
-      'La mente es como una tabula rasa',
-      'La mente es como un libro en blanco',
-      'La mente es como un cuaderno en blanco',
-      'La mente es como un papel en blanco'
+      'Cogito. ergo sum" ("Pienso. luego existo").',
+      'Daría todo lo que sé. por la mitad de lo que ignoro.',
+      'El buen sentido es la cosa mejor repartida del mundo; porque cada uno piensa estar tan bien provisto de él.',
+      'Para investigar la verdad es preciso dudar. en cuanto sea posible. de todas las cosas.',
+      'Leer todos los buenos libros es como una conversación con las mejores mentes de los siglos pasados.',
+      'La filosofía es la que nos distingue de los salvajes y bárbaros; las naciones son tanto más civilizadas y cultas cuanto mejor filosofan sus hombres.',
+      'Dividir cada una de las dificultades que se examinan en tantas partes como sea posible y en cuantas requiera su mejor solución.',
+      'No hay nada repartido de modo más equitativo que la razón: todo el mundo está convencido de tener suficiente.'
     ]
   }, 
 
@@ -121,7 +131,7 @@ export const filosofos: Filosofos[] = [
     imagePresentation: '/img/Kant/Kant-image-presentation.webp',
     imageSmall: '/img/Kant/Kant-image-small.webp',
     topic: 'cristicismo',
-    escenaryImage1: '/img/Kant/Kant-escenary-1.webp',
+    escenaryImage1: '/img/Locke/escenary-2.webp',
     phrases: [
       {
         question: '¿Qué es la filosofía según Kant?',
@@ -155,11 +165,14 @@ export const filosofos: Filosofos[] = [
       }
     ],
     phrases2: [
-      'La mente es como un papel en blanco',
-      'La mente es como una tabula rasa',
-      'La mente es como un libro en blanco',
-      'La mente es como un cuaderno en blanco',
-      'La mente es como un papel en blanco'
+      'La razón humana es la única que produce religión y ciencia. ambas. A partir de los mismos principios.',
+      'La ilustración es la salida del hombre de su autoculpable inmadurez.',
+      'Obra solo según una máxima tal que puedas querer al mismo tiempo que se torne en ley universal.',
+      'La moral no se enseña; se aprende por uno mismo.',
+      'El espacio y el tiempo son formas de nuestra sensibilidad, son condiciones necesarias bajo las cuales se nos presentan los objetos externos.',
+      'La libertad es aquella facultad que aumenta la utilidad de todas las demás facultades.',
+      'El deber es la necesidad de actuar por respeto a la ley.',
+      'La experiencia sin teoría es ciega. pero la teoría sin experiencia es un mero juego intelectual.'
     ]
   }
 ]

@@ -9,13 +9,22 @@ const { id } = Astro.params
 const filosofo = filosofos.find((f) => f.id === id)
 
 const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
-
-console.log(phrases2)
 ---
 
 <Layout title="Juego del Filosofo" backgroundImage={escenaryImage1}>
-  <section class="flex justify-center w-full min-h-[400px] h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board" data-name={name} data-phrases={phrases2}>
+  <section class="flex gap-x-10 justify-center w-full min-h-[400px] h-[400px] lg:w-full lg:min-h-screen relative mb-10 lg:mb-0" id="container-board" data-name={name} data-phrases={phrases2}>
 
+   <div class="flex justify-center flex-col gap-y-10">
+    <h2 class="flex justify-center text-center text-3xl gap-x-5"> 
+      Nivel 
+      <span id="level" class="text-blue-400/90"> 1 </span>
+    </h2>
+
+    <h2 class="flex justify-center text-center items-center text-3xl gap-x-5"> 
+      Cofres Abiertos 
+      <span id="openCofres" class="text-blue-400/90"> 0 </span>
+    </h2>
+   </div>
 
     <canvas id="gameCanvas" width="900" height="600" class="border"></canvas>
 
@@ -53,6 +62,8 @@ console.log(phrases2)
   const $container = $('#container-board') as HTMLElement
   const $modal = $('.clip-dialog') as HTMLDialogElement
   const $textShowing = $('#text-showing') as HTMLParagraphElement
+  const $textLevel = $('#level') as HTMLSpanElement
+  const $textOpenCofres = $('#openCofres') as HTMLSpanElement
   const $buttonClose = $('#close-dialog') as HTMLButtonElement
 
   const canvas = $('#gameCanvas') as HTMLCanvasElement
@@ -162,6 +173,9 @@ console.log(phrases2)
   const villanImage3 = new Image()
   villanImage3.src = '/img/Recursos/Villan-3.webp'
 
+  const villanImage4 = new Image()
+  villanImage4.src = '/img/Recursos/Villan-4.webp'
+
   function drawFilosofo() {
     ctx?.drawImage(filosofoImage, filosofo.x, filosofo.y, filosofo.width, filosofo.height)
   }
@@ -188,6 +202,10 @@ console.log(phrases2)
     } else if (levelGame === 3) {  
       villans.forEach(villan => {
         ctx?.drawImage(villanImage3, villan.x, villan.y, villan.width, villan.height)
+      })
+    } else if (levelGame === 4) {
+      villans.forEach(villan => {
+        ctx?.drawImage(villanImage4, villan.x, villan.y, villan.width, villan.height)
       })
     }
   }
@@ -247,6 +265,7 @@ console.log(phrases2)
             moveRight = false
             moveUp = false
             moveDown = false
+
             villansPar.forEach(villan => {
               villan.dx = 3
               villan.dy = -3
@@ -258,6 +277,8 @@ console.log(phrases2)
               cofre.open = true
               villans.push({ x: Math.random() * width, y: Math.random() * height, width: 80, height: 80, dx: 2, dy: 2 })
             }
+
+            $textOpenCofres.innerHTML = openCofres.toString()
 
             if (openCofres === limitCofres) {
               confetti({
@@ -281,6 +302,10 @@ console.log(phrases2)
     if (levelGame > 1) {
       filosofo.speed = filosofo.speed - 1
       villans.length = 4
+      $textLevel.innerHTML = levelGame.toString()
+      $textOpenCofres.innerHTML = openCofres.toString()
+    } else {
+      levelGame = 1
     }
     openCofres = 0
     allCofresOpen = false

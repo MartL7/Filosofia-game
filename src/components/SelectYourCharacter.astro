@@ -65,6 +65,16 @@ import { filosofos } from '../const/filosofos'
   const $imagePresentation = $('#image-presentation') as HTMLImageElement
   const $nameText = $('#name-text') as HTMLSpanElement
 
+  const principalSound = new Audio('/Sounds/Principal-Sound.mp3')
+  principalSound.loop = true
+
+  function playSound() {
+    principalSound.currentTime = 0
+    principalSound.play().catch(error => {
+      console.log('Error al reproducir el sonido:', error)
+    })
+  }
+
   function updatePresentation(name: string) {
     const folder = name.split(' ').at(-1)
     const urlImage = `/img/${folder}/${folder}-image-presentation.webp` ?? '/img/Locke/Locke-image-presentation.webp'
@@ -100,5 +110,11 @@ import { filosofos } from '../const/filosofos'
     const savedName = localStorage.getItem('filosofo') || 'John Locke'
     updatePresentation(savedName)
     setActiveLink(savedName)
+    playSound()
+
+    document.addEventListener('click', function initSound() {
+      playSound()
+      document.removeEventListener('click', initSound)
+    })
   })
 </script>

@@ -102,6 +102,10 @@ const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
     initialY: 0 
   }
 
+  // -> Sonidos
+  const openChestSound = new Audio('/Sounds/Open-box-sound.mp3')
+  const finishGameSound = new Audio('/Sounds/Finish-Sound.mp3')
+
   function events() {
     document.addEventListener('keydown', (event) => {
       const { key } = event
@@ -270,6 +274,9 @@ const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
               villan.dx = 3
               villan.dy = -3
             })
+
+            openChestSound.play()
+
             showModal(index)
 
             if (!cofre.open) {
@@ -296,16 +303,36 @@ const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
     })
   }
 
+  function GameOver() {
+    finishGameSound.play()
+    villans.length = 0
+    confetti({
+      particleCount: 300,
+      spread: 70,
+      origin: { y: 0.6 },
+      shapes: ['star']
+    })
+    moveLeft = false
+    moveRight = false
+    moveUp = false
+    moveDown = false
+  }
+
   function restartGame() {
     cofres.forEach(cofre => cofre.open = false)
     levelGame++
+
+    if (levelGame === 5) {
+      GameOver()
+      allCofresOpen = true
+      return
+    }
+
     if (levelGame > 1) {
       filosofo.speed = filosofo.speed - 1
       villans.length = 4
       $textLevel.innerHTML = levelGame.toString()
       $textOpenCofres.innerHTML = openCofres.toString()
-    } else {
-      levelGame = 1
     }
     openCofres = 0
     allCofresOpen = false

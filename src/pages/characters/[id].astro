@@ -105,6 +105,15 @@ const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
   // -> Sonidos
   const openChestSound = new Audio('/Sounds/Open-box-sound.mp3')
   const finishGameSound = new Audio('/Sounds/Finish-Sound.mp3')
+  const principalSound = new Audio('/Sounds/Principal-Sound.mp3')
+  principalSound.loop = true
+
+  function playSound() {
+    principalSound.currentTime = 0
+    principalSound.play().catch(error => {
+      console.log('Error al reproducir el sonido:', error)
+    })
+  }
 
   function events() {
     document.addEventListener('keydown', (event) => {
@@ -282,7 +291,7 @@ const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
             if (!cofre.open) {
               openCofres++
               cofre.open = true
-              villans.push({ x: Math.random() * width, y: Math.random() * height, width: 80, height: 80, dx: 2, dy: 2 })
+             villans.push({ x: Math.random() * width, y: Math.random() * height, width: 80, height: 80, dx: 2, dy: 2 })
             }
 
             $textOpenCofres.innerHTML = openCofres.toString()
@@ -304,6 +313,7 @@ const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
   }
 
   function GameOver() {
+    principalSound.pause()
     finishGameSound.play()
     villans.length = 0
     confetti({
@@ -366,6 +376,15 @@ const { phrases, phrases2, escenaryImage1, name } = filosofo || {}
       moveDown = true
     }
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    playSound()
+
+    document.addEventListener('click', function initSound() {
+      playSound()
+      document.removeEventListener('click', initSound)
+    })
+  })
 
   events()
   draw()
